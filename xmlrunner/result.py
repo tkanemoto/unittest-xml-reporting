@@ -190,8 +190,11 @@ class _XMLTestResult(_TextTestResult):
             self.stream.write(" ... ")
 
     def _save_output_data(self):
-        self._stdout_data = sys.stdout.getvalue()
-        self._stderr_data = sys.stderr.getvalue()
+        try:
+            self._stdout_data = sys.stdout.getvalue()
+            self._stderr_data = sys.stderr.getvalue()
+        except AttributeError:
+            pass
 
     def stopTest(self, test):
         """
@@ -485,8 +488,14 @@ class _XMLTestResult(_TextTestResult):
             msgLines = traceback.format_exception(exctype, value, tb)
 
         if self.buffer:
-            output = sys.stdout.getvalue()
-            error = sys.stderr.getvalue()
+            try:
+                output = sys.stdout.getvalue()
+            except AttributeError:
+                output = None
+            try:
+                error = sys.stderr.getvalue()
+            except AttributeError:
+                error = None
             if output:
                 if not output.endswith('\n'):
                     output += '\n'
