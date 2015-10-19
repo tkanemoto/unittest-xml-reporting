@@ -64,6 +64,12 @@ class XMLTestRunnerTestCase(unittest.TestCase):
                 with self.subTest(i=i):
                     self.fail('this is a subtest.')
 
+    class DummySetupFailTest(unittest.TestCase):
+        def setUp(self):
+            raise Exception('Massive fail')
+        def test_pass(self):
+            pass
+
     def setUp(self):
         self.stream = StringIO()
         self.outdir = mkdtemp()
@@ -310,4 +316,9 @@ class XMLTestRunnerTestCase(unittest.TestCase):
             self._test_xmlrunner(suite)
         finally:
             sys.stdout, sys.stderr = old_stdout, old_stderr
+
+    def test_xmlrunner_setup_fail(self):
+        suite = unittest.TestSuite()
+        suite.addTest(self.DummySetupFailTest('test_pass'))
+        self._test_xmlrunner(suite)
 
